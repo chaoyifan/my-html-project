@@ -1,10 +1,1244 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <title>Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>微博 - 分享新鲜事</title>
+  <style>
+    :root {
+      --bg-color: #f7f8fa;
+      --panel-bg: #ffffff;
+      --border-color: #e5e7eb;
+      --text-color: #1a1a1a;
+      --muted-text-color: #8c8c8c;
+      --primary-color: #ff8200; /* 微博橙 */
+      --secondary-color: #f5f5f5;
+      --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --border-radius-lg: 12px;
+      --border-radius-md: 8px;
+      --border-radius-sm: 4px;
+
+      /* For specific badge colors */
+      --badge-neutral-bg: #e9e9e9;
+      --badge-neutral-color: #595959;
+      --badge-neutral-border: #d4d4d4;
+
+      --badge-positive-bg: #e6ffe6;
+      --badge-positive-color: #16a34a;
+      --badge-positive-border: #a8e6a8;
+
+      --badge-negative-bg: #ffe6e6;
+      --badge-negative-color: #e6162d;
+      --badge-negative-border: #ffb3b3;
+
+      --badge-ai-bg: #e6f7ff;
+      --badge-ai-color: #1890ff;
+      --badge-ai-border: #a6e7ff;
+
+      --weibo-red: #e6162d;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif, "PingFang SC", "Microsoft YaHei";
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--primary-color);
+    }
+
+    /* Top Bar */
+    .topbar {
+      background-color: var(--panel-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-light);
+    }
+
+    .topbar-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .weibo-logo {
+      font-weight: bold;
+      font-size: 20px;
+      color: var(--weibo-red);
+    }
+
+    .search-box {
+      position: relative;
+      width: 250px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 35px;
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      background-color: var(--secondary-color);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-box .icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted-text-color);
+    }
+
+    .top-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--muted-text-color);
+      font-size: 12px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .top-nav-item.active {
+      color: var(--primary-color);
+    }
+
+    .top-nav-item .icon {
+      font-size: 18px;
+      margin-bottom: 3px;
+    }
+
+    /* Generic Avatar for topbar */
+    .user-avatar-top {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .user-avatar-top img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+
+    .topbar-right .settings {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: var(--muted-text-color);
+      font-size: 18px;
+    }
+
+    /* Main Layout */
+    .main-layout {
+      max-width: 1200px;
+      margin: 15px auto;
+      display: grid;
+      grid-template-columns: 200px 1fr 280px;
+      gap: 15px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .main-layout {
+        grid-template-columns: 1fr 280px;
+      }
+      .sidebar-left { display: none; }
+    }
+    @media (max-width: 768px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar-right { display: none; }
+      .topbar-content { flex-wrap: wrap; justify-content: center; }
+      .search-box { width: 100%; order: 1; margin-top: 10px; }
+      .topbar-left, .topbar-right { gap: 10px; }
+    }
+
+
+    /* Left Sidebar */
+    .sidebar-left {
+      background-color: var(--panel-bg);
+      border-radius: var(--border-radius-lg);
+      padding: 15px 0;
+      box-shadow: var(--shadow-light);
+    }
+
+    .sidebar-left .menu-section {
+      margin-bottom: 15px;
+    }
+
+    .sidebar-left .menu-title {
+      font-size: 13px;
+      color: var(--muted-text-color);
+      padding: 8px 15px;
+    }
+
+    .sidebar-left .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+      color: var(--text-color);
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-left .menu-item:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .sidebar-left .menu-item.active {
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .sidebar-left .menu-item .icon {
+      font-size: 16px;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Post Composer */
+    .post-composer {
+      background-color: var(--panel-bg);
+      border-radius: var(--border-radius-lg);
+      padding: 15px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .composer-header-text {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .composer-options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .composer-options-left {
+      display: flex;
+      gap: 10px;
+    }
+
+    .custom-select-wrapper {
+      position: relative;
+    }
+
+    .custom-select-button {
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 5px 8px;
+      background-color: var(--panel-bg);
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      user-select: none;
+    }
+    .custom-select-button:hover {
+      border-color: var(--primary-color);
+    }
+
+    .custom-select-dropdown {
+      display: none;
+      position: absolute;
+      background-color: var(--panel-bg);
+      min-width: 160px;
+      box-shadow: var(--shadow-light);
+      border-radius: var(--border-radius-md);
+      z-index: 100;
+      top: 100%;
+      left: 0;
+      margin-top: 5px;
+      border: 1px solid var(--border-color);
+    }
+
+    .custom-select-dropdown.show {
+      display: block;
+    }
+
+    .custom-select-dropdown .item {
+      color: var(--text-color);
+      padding: 8px 12px;
+      display: block;
+      cursor: pointer;
+    }
+
+    .custom-select-dropdown .item:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .custom-select-dropdown .item.selected {
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .composer-main-input {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      margin: 10px 0;
+    }
+
+    /* Composer Avatar specific style */
+    .composer-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .composer-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+
+    .composer-editor {
+      flex-grow: 1;
+    }
+
+    .composer-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0;
+      border: none;
+      resize: vertical;
+      font-size: 14px;
+      line-height: 1.6;
+      outline: none;
+      background-color: transparent;
+    }
+    
+    .composer-actions-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    .composer-media-options {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .composer-media-options .action-icon {
+      cursor: pointer;
+      color: var(--muted-text-color);
+      font-size: 18px;
+    }
+    .composer-media-options .action-icon:hover {
+      color: var(--primary-color);
+    }
+
+    .composer-send-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .composer-send-buttons .btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+    }
+    .composer-send-buttons .btn-reset {
+      background-color: #f0f0f0;
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+    .composer-send-buttons .btn-send {
+      background-color: var(--weibo-red);
+      color: white;
+      border: none;
+    }
+    .composer-send-buttons .btn-send:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+
+    /* Feed Filter */
+    .feed-filter {
+      display: flex;
+      gap: 10px;
+      background-color: var(--panel-bg);
+      padding: 10px 15px;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-light);
+      margin-bottom: 15px;
+    }
+    .feed-filter span {
+      padding: 5px 10px;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      color: var(--muted-text-color);
+    }
+    .feed-filter span.active {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+    }
+
+    .posts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Generic Post Card */
+    .post-card {
+      background-color: var(--panel-bg);
+      border-radius: var(--border-radius-lg);
+      padding: 15px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    /* Generic Post Avatar (for generated posts) */
+    .post-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .post-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+
+    .post-info {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .post-author-line {
+      font-weight: bold;
+      color: var(--text-color);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .post-meta-line {
+      font-size: 12px;
+      color: var(--muted-text-color);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .vplus-badge {
+      display: inline-block;
+      background-color: var(--weibo-red);
+      color: white;
+      padding: 0 4px;
+      border-radius: var(--border-radius-sm);
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .declare-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: var(--border-radius-sm);
+      font-size: 11px;
+      font-weight: bold;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .declare-badge.neutral {
+      background-color: var(--badge-neutral-bg);
+      color: var(--badge-neutral-color);
+      border-color: var(--badge-neutral-border);
+    }
+    .declare-badge.original {
+      background-color: var(--badge-positive-bg);
+      color: var(--badge-positive-color);
+      border-color: var(--badge-positive-border);
+    }
+    .declare-badge.repost {
+      background-color: var(--badge-neutral-bg);
+      color: var(--badge-neutral-color);
+      border-color: var(--badge-neutral-border);
+    }
+    .declare-badge.ai {
+      background-color: var(--badge-ai-bg);
+      color: var(--badge-ai-color);
+      border-color: var(--badge-ai-border);
+    }
+    .declare-badge.fiction {
+      background-color: var(--badge-negative-bg);
+      color: var(--badge-negative-color);
+      border-color: var(--badge-negative-border);
+    }
+
+    .post-content {
+      margin-bottom: 10px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .post-image {
+      width: 100%;
+      border-radius: var(--border-radius-md);
+      margin-top: 10px;
+      max-width: 400px;
+      display: block;
+    }
+
+    .post-actions-row {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .post-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--muted-text-color);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .post-action-btn:hover {
+      color: var(--primary-color);
+    }
+
+    /*人民日报特殊卡片样式*/
+    .rmrb-post-card {
+        padding: 0;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+    }
+    .rmrb-post-card .rmrb-header-content {
+        padding: 15px 15px 0 15px;
+        background-color: var(--panel-bg);
+        position: relative;
+        z-index: 2;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    }
+    .rmrb-post-card .rmrb-avatar-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    /* People's Daily Avatar (specific to their card) */
+    .rmrb-post-card .rmrb-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .rmrb-post-card .rmrb-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .rmrb-post-card .rmrb-author-info {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    .rmrb-post-card .rmrb-author-name {
+        font-weight: bold;
+        font-size: 15px;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .rmrb-post-card .rmrb-meta-info {
+        font-size: 12px;
+        color: var(--muted-text-color);
+        margin-top: 2px;
+    }
+    .rmrb-post-card .rmrb-text-content {
+        line-height: 1.6;
+        white-space: pre-wrap;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .rmrb-image-container {
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        background-color: var(--panel-bg);
+    }
+    .rmrb-main-image {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+        border-radius: 0;
+    }
+    .rmrb-card-link-wrapper {
+        display: block;
+        background-color: #f7f9fc;
+        border-top: 1px solid var(--border-color);
+        padding: 10px 15px;
+        text-decoration: none;
+        color: var(--text-color);
+    }
+    .rmrb-card-link-inner {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .rmrb-card-link-inner img {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--border-radius-sm);
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .rmrb-card-link-inner .link-text {
+        font-weight: bold;
+        line-height: 1.3;
+        font-size: 14px;
+        color: #333;
+    }
+    .rmrb-post-card .post-actions-row {
+        margin-top: 0;
+        border-top: 1px solid var(--border-color);
+        padding-top: 10px;
+        padding-bottom: 10px;
+        background-color: var(--panel-bg);
+        border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+    }
+    .rmrb-post-card .post-actions-row .post-action-btn {
+        flex-grow: 1;
+        justify-content: center;
+        border-right: 1px solid var(--border-color);
+    }
+    .rmrb-post-card .post-actions-row .post-action-btn:last-child {
+        border-right: none;
+    }
+
+
+    /* Right Sidebar */
+    .sidebar-right {
+      background-color: var(--panel-bg);
+      border-radius: var(--border-radius-lg);
+      padding: 15px;
+      box-shadow: var(--shadow-light);
+    }
+
+    .sidebar-right .section-title {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hot-search-list .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .hot-search-list .item .rank {
+      font-weight: bold;
+      width: 20px;
+      text-align: right;
+    }
+    .hot-search-list .item .rank.top3 {
+      color: var(--weibo-red);
+    }
+
+    .hot-search-list .item .title {
+      flex-grow: 1;
+      color: var(--text-color);
+    }
+    .hot-search-list .item .title a {
+        color: var(--text-color);
+    }
+    .hot-search-list .item .title a:hover {
+        color: var(--primary-color);
+    }
+
+
+    .hot-search-list .item .hot-value {
+      color: var(--muted-text-color);
+    }
+    .hot-search-list .item .new-icon {
+      background-color: var(--weibo-red);
+      color: white;
+      padding: 1px 4px;
+      border-radius: var(--border-radius-sm);
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .hot-search-list .more {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .hot-search-list .more a {
+        color: var(--muted-text-color);
+    }
+    .hot-search-list .more a:hover {
+        color: var(--primary-color);
+    }
+
+    .interest-list .item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    /* Placeholder for interest list avatar */
+    .interest-list .item .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .interest-list .item .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .interest-list .item .name {
+      font-weight: bold;
+      color: var(--text-color);
+    }
+    .interest-list .item .follow-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: auto; /* Push to right */
+    }
+
+    /* Toast for success message */
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 15px 30px;
+      border-radius: var(--border-radius-lg);
+      font-size: 16px;
+      font-weight: bold;
+      z-index: 1001;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: none; /* Hidden by default */
+    }
+
+    .toast.show {
+      opacity: 1;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello GitHub Pages</h1>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-content">
+      <div class="topbar-left">
+        <div class="weibo-logo">微博</div>
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" placeholder="搜索微博" />
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="top-nav-item active">
+          <span class="icon">🏠</span>
+          <span>首页</span>
+        </div>
+        <div class="top-nav-item">
+          <span class="icon">🔥</span>
+          <span>热点</span>
+        </div>
+        <div class="top-nav-item">
+          <span class="icon">✉️</span>
+          <span>消息</span>
+        </div>
+        <div class="top-nav-item">
+          <span class="icon">🔔</span>
+          <span>通知</span>
+        </div>
+        <div class="top-nav-item">
+          <span class="icon">👤</span>
+          <span>我</span>
+        </div>
+        <div class="user-avatar-top">
+            <img src="用户.jpg" alt="用户头像" />
+        </div>
+        <div class="settings">
+          <span>⚙️</span>
+          <span>🌙</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+    <!-- Left Sidebar -->
+    <div class="sidebar-left">
+      <div class="menu-section">
+        <div class="menu-item active">
+          <span class="icon">📑</span>
+          <span>全部关注</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">✨</span>
+          <span>最新微博</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">⭐</span>
+          <span>特别关注</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">👥</span>
+          <span>好友圈</span>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">自定义分组</div>
+        <div class="menu-item">
+          <span class="icon">🌟</span>
+          <span>名人明星</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">🤝</span>
+          <span>同事</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">👨‍🎓</span>
+          <span>同学</span>
+        </div>
+        <div class="menu-item">
+          <span class="icon">💑</span>
+          <span>情侣关注</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Post Composer -->
+      <div class="post-composer">
+        <div class="composer-header-text">有什么新鲜事想分享给大家？</div>
+        <div class="composer-options-row">
+          <div class="composer-options-left">
+            <div class="custom-select-wrapper">
+              <div class="custom-select-button" id="publicDropdownBtn">
+                <span id="publicSelectedValue">公开</span>
+                <span>▼</span>
+              </div>
+              <div class="custom-select-dropdown" id="publicDropdownContent">
+                <div class="item selected" data-value="公开">公开</div>
+                <div class="item" data-value="粉丝可见">粉丝可见</div>
+                <div class="item" data-value="好友圈">好友圈</div>
+                <div class="item" data-value="仅自己可见">仅自己可见</div>
+                <div class="item" data-value="群可见">群可见</div>
+              </div>
+            </div>
+
+            <div class="custom-select-wrapper">
+              <div class="custom-select-button" id="claimDropdownBtn">
+                <span id="claimSelectedValue">无</span>
+                <span>▼</span>
+              </div>
+              <div class="custom-select-dropdown" id="claimDropdownContent">
+                <div class="item selected" data-value="无">无</div>
+                <div class="item" data-value="内容为自主创作">内容为自主创作</div>
+                <div class="item" data-value="内容为转载">内容为转载</div>
+                <div class="item" data-value="内容由AI生成">内容由AI生成</div>
+                <div class="item" data-value="内容为虚构演绎">内容为虚构演绎</div>
+              </div>
+            </div>
+          </div>
+          <div class="composer-options-right">
+             <!-- Empty for layout consistency with screenshot -->
+          </div>
+        </div>
+
+        <div class="composer-main-input">
+          <div class="composer-avatar">
+            <img src="用户.jpg" alt="用户头像" />
+          </div>
+          <div class="composer-editor">
+            <textarea id="composerTextarea" class="composer-textarea" placeholder="在这里写下你的原创内容..."></textarea>
+          </div>
+        </div>
+        
+        <div class="composer-actions-bottom">
+          <div class="composer-media-options">
+            <span class="action-icon">😀</span>
+            <span class="action-icon">🖼️</span>
+            <span class="action-icon">🎞️</span>
+            <span class="action-icon">#</span>
+            <span class="action-icon">📰</span>
+            <span class="action-icon">...</span>
+          </div>
+          <div class="composer-send-buttons">
+            <button id="resetBtn" class="btn btn-reset">重置</button>
+            <button id="sendPostBtn" class="btn btn-send" disabled>发送</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed Filter -->
+      <div class="feed-filter">
+        <span class="active">推荐</span>
+        <span>关注</span>
+        <span>最新</span>
+      </div>
+
+      <!-- Posts Feed Container -->
+      <div id="postsFeed" class="posts-container">
+        <!-- 人民日报 Initial post -->
+        <div class="post-card rmrb-post-card">
+          <div class="rmrb-header-content">
+            <div class="rmrb-avatar-line">
+                <div class="rmrb-avatar">
+                    <img src="人民日报.jpg" alt="人民日报头像" />
+                </div>
+                <div class="rmrb-author-info">
+                    <div class="rmrb-author-name">
+                        人民日报 <span class="vplus-badge">V+</span>
+                    </div>
+                    <div class="rmrb-meta-info">
+                        12小时前 来自 微博weibo.com
+                    </div>
+                </div>
+            </div>
+            <div class="rmrb-text-content">
+                【夜读：#5个方法让周末不再“无效休息”#】①允许自己不焦虑地休息；②用心地做一顿早餐；③简单出门走一走；④整理一个角落；⑤允许放空自己。周末要到了，好好放松，为新的一周积蓄力量。#人民日报夜读#
+            </div>
+          </div>
+          <a href="#" class="rmrb-card-link-wrapper">
+            <div class="rmrb-card-link-inner">
+                <img src="插图.jpg" alt="人民日报插图" />
+                <div class="link-text">【夜读】5个方法让周末不再“无效休息”</div>
+            </div>
+          </a>
+          <div class="post-actions-row">
+            <span class="post-action-btn">转发 718</span>
+            <span class="post-action-btn">评论 1591</span>
+            <span class="post-action-btn">点赞 2030</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar-right">
+      <div class="section-title">
+        <span>微博热搜</span>
+        <a href="#">刷新</a>
+      </div>
+      <div class="hot-search-list">
+        <div class="item"><span class="rank top3">1</span><span class="title"><a href="#">#高考倒计时30天#</a></span><span class="hot-value">386616</span></div>
+        <div class="item"><span class="rank top3">2</span><span class="title"><a href="#">#夏季时尚穿搭指南#</a></span><span class="hot-value">264419</span></div>
+        <div class="item"><span class="rank top3">3</span><span class="title"><a href="#">#电影票房再创新高#</a></span><span class="hot-value">1103503</span></div>
+        <div class="item"><span class="rank">4</span><span class="title"><a href="#">#职场新人求生法则#</a></span><span class="hot-value">851204</span></div>
+        <div class="item"><span class="rank">5</span><span class="title"><a href="#">#PAPI酱谈育儿理念#</a></span><span class="hot-value">747459</span><span class="new-icon">新</span></div>
+        <div class="item"><span class="rank">6</span><span class="title"><a href="#">#AI绘画版权之争#</a></span><span class="hot-value">623145</span></div>
+        <div class="item"><span class="rank">7</span><span class="title"><a href="#">#全球经济面临的挑战#</a></span><span class="hot-value">512345</span></div>
+        <div class="item"><span class="rank">8</span><span class="title"><a href="#">#明星新剧开播#</a></span><span class="hot-value">487654</span></div>
+        <div class="item"><span class="rank">9</span><span class="title"><a href="#">#世界杯预选赛战报#</a></span><span class="hot-value">412345</span></div>
+        <div class="item"><span class="rank">10</span><span class="title"><a href="#">#科技改变生活#</a></span><span class="hot-value">398765</span></div>
+        <div class="more"><a href="#">查看完整热搜榜单 ></a></div>
+      </div>
+
+      <div class="section-title" style="margin-top: 25px;">你可能感兴趣的人</div>
+      <div class="interest-list">
+        <div class="item">
+          <div class="avatar">
+            <img src="用户.jpg" alt="用户头像" />
+          </div>
+          <span class="name">张三</span>
+          <button class="follow-btn">+关注</button>
+        </div>
+        <div class="item">
+          <div class="avatar">
+            <img src="用户.jpg" alt="用户头像" />
+          </div>
+          <span class="name">李四老师</span>
+          <button class="follow-btn">+关注</button>
+        </div>
+        <div class="item">
+          <div class="avatar">
+            <img src="用户.jpg" alt="用户头像" />
+          </div>
+          <span class="name">王五说科技</span>
+          <button class="follow-btn">+关注</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast for success message -->
+  <div id="successToast" class="toast">发布成功</div>
+
+  <script>
+    // Constants
+    // 修改为相对路径
+    const USER_AVATAR_URL = '用户.jpg'; 
+    const RMRB_AVATAR_URL = '人民日报.jpg'; 
+    const RMRB_IMAGE_URL = '插图.jpg'; 
+
+
+    // UI Elements
+    const composerTextarea = document.getElementById('composerTextarea');
+    const sendPostBtn = document.getElementById('sendPostBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const postsFeed = document.getElementById('postsFeed');
+    const successToast = document.getElementById('successToast');
+
+    // Dropdown elements
+    const publicDropdownBtn = document.getElementById('publicDropdownBtn');
+    const publicDropdownContent = document.getElementById('publicDropdownContent');
+    const publicSelectedValue = document.getElementById('publicSelectedValue');
+
+    const claimDropdownBtn = document.getElementById('claimDropdownBtn');
+    const claimDropdownContent = document.getElementById('claimDropdownContent');
+    const claimSelectedValue = document.getElementById('claimSelectedValue');
+
+    let currentPublicSelection = "公开";
+    let currentClaimSelection = "无";
+
+    // --- Helper Functions ---
+    function updateSendButtonState() {
+      const text = composerTextarea.value.trim();
+      sendPostBtn.disabled = text.length === 0;
+    }
+
+    function showToast(message, duration = 1000) {
+      successToast.textContent = message;
+      successToast.classList.add('show');
+      return new Promise(resolve => {
+        setTimeout(() => {
+          successToast.classList.remove('show');
+          resolve();
+        }, duration);
+      });
+    }
+
+    function getDeclareBadgeClass(claimValue) {
+      switch (claimValue) {
+        case '内容为自主创作': return 'original';
+        case '内容为转载': return 'repost';
+        case '内容由AI生成': return 'ai';
+        case '内容为虚构演绎': return 'fiction';
+        case '无': return 'neutral';
+        default: return 'neutral';
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str ?? '').replace(/[&<>"']/g, (m) => {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return map[m] || m;
+      });
+    }
+
+    function generateUserPostCard(postData) {
+      const postCard = document.createElement('div');
+      postCard.classList.add('post-card');
+
+      const claimBadgeHtml = postData.claim !== '无' ? `
+        <span class="declare-badge ${getDeclareBadgeClass(postData.claim)}">${postData.claim}</span>
+      ` : '';
+
+      postCard.innerHTML = `
+        <div class="post-header">
+          <div class="post-avatar">
+            <img src="${USER_AVATAR_URL}" alt="用户头像" />
+          </div>
+          <div class="post-info">
+            <div class="post-author-line">
+              我的账号
+              ${postData.publicScope !== '公开' ? `<span class="declare-badge neutral">${postData.publicScope}</span>` : ''}
+              ${claimBadgeHtml}
+            </div>
+            <div class="post-meta-line">
+              刚刚 来自微博网页版
+            </div>
+          </div>
+        </div>
+        <div class="post-content">${escapeHtml(postData.content)}</div>
+        <div class="post-actions-row">
+          <span class="post-action-btn">转发 0</span>
+          <span class="post-action-btn">评论 0</span>
+          <span class="post-action-btn">点赞 0</span>
+        </div>
+      `;
+      return postCard;
+    }
+
+    // --- Event Listeners ---
+    composerTextarea.addEventListener('input', updateSendButtonState);
+
+    // Reset button
+    resetBtn.addEventListener('click', () => {
+      composerTextarea.value = '';
+      publicSelectedValue.textContent = '公开';
+      currentPublicSelection = '公开';
+      claimSelectedValue.textContent = '无';
+      currentClaimSelection = '无';
+      updateSendButtonState();
+      // Close dropdowns
+      publicDropdownContent.classList.remove('show');
+      claimDropdownContent.classList.remove('show');
+    });
+
+    // Dropdown toggle and selection helper
+    function setupDropdown(button, content, selectedValueSpan) {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        // Close other dropdowns
+        if (button.id === 'publicDropdownBtn') {
+          claimDropdownContent.classList.remove('show');
+        } else { // claimDropdownBtn
+          publicDropdownContent.classList.remove('show');
+        }
+        content.classList.toggle('show');
+      });
+
+      content.querySelectorAll('.item').forEach(item => {
+        item.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const value = item.dataset.value;
+          selectedValueSpan.textContent = value;
+          // Update the correct variable based on which dropdown
+          if (button.id === 'publicDropdownBtn') {
+            currentPublicSelection = value;
+          } else {
+            currentClaimSelection = value;
+          }
+
+          // Update selected style
+          content.querySelectorAll('.item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+
+          content.classList.remove('show');
+        });
+      });
+    }
+
+    setupDropdown(publicDropdownBtn, publicDropdownContent, publicSelectedValue);
+    setupDropdown(claimDropdownBtn, claimDropdownContent, claimSelectedValue);
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      publicDropdownContent.classList.remove('show');
+      claimDropdownContent.classList.remove('show');
+    });
+
+    sendPostBtn.addEventListener('click', async () => {
+      const content = composerTextarea.value.trim();
+      if (!content) {
+        alert('内容不能为空！');
+        return;
+      }
+
+      await showToast('发布成功');
+
+      const newPostData = {
+        content: content,
+        publicScope: currentPublicSelection,
+        claim: currentClaimSelection
+      };
+
+      postsFeed.prepend(generateUserPostCard(newPostData));
+
+      // Reset composer
+      composerTextarea.value = '';
+      publicSelectedValue.textContent = '公开';
+      currentPublicSelection = '公开';
+      claimSelectedValue.textContent = '无';
+      currentClaimSelection = '无';
+      updateSendButtonState();
+    });
+
+    // Initial setup
+    updateSendButtonState();
+  </script>
+
 </body>
 </html>
