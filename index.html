@@ -142,7 +142,6 @@
       border-radius: 50%;
     }
 
-
     .topbar-right .settings {
       display: flex;
       align-items: center;
@@ -176,7 +175,6 @@
       .search-box { width: 100%; order: 1; margin-top: 10px; }
       .topbar-left, .topbar-right { gap: 10px; }
     }
-
 
     /* Left Sidebar */
     .sidebar-left {
@@ -336,7 +334,6 @@
       border-radius: 50%;
     }
 
-
     .composer-editor {
       flex-grow: 1;
     }
@@ -352,7 +349,7 @@
       outline: none;
       background-color: transparent;
     }
-    
+
     .composer-actions-bottom {
       display: flex;
       justify-content: space-between;
@@ -401,7 +398,6 @@
       background-color: #cccccc;
       cursor: not-allowed;
     }
-
 
     /* Feed Filter */
     .feed-filter {
@@ -460,7 +456,6 @@
       object-fit: cover;
       border-radius: 50%;
     }
-
 
     .post-info {
       flex-grow: 1;
@@ -584,7 +579,6 @@
         gap: 10px;
         margin-bottom: 10px;
     }
-    /* People's Daily Avatar (specific to their card) */
     .rmrb-post-card .rmrb-avatar {
         width: 45px;
         height: 45px;
@@ -678,7 +672,6 @@
         border-right: none;
     }
 
-
     /* Right Sidebar */
     .sidebar-right {
       background-color: var(--panel-bg);
@@ -723,7 +716,6 @@
     .hot-search-list .item .title a:hover {
         color: var(--primary-color);
     }
-
 
     .hot-search-list .item .hot-value {
       color: var(--muted-text-color);
@@ -842,7 +834,7 @@
           <span>我</span>
         </div>
         <div class="user-avatar-top">
-            <img src="用户.jpg" alt="用户头像" />
+            <img src="./用户.jpg" alt="用户头像" />
         </div>
         <div class="settings">
           <span>⚙️</span>
@@ -931,6 +923,7 @@
               </div>
             </div>
           </div>
+
           <div class="composer-options-right">
              <!-- Empty for layout consistency with screenshot -->
           </div>
@@ -938,13 +931,13 @@
 
         <div class="composer-main-input">
           <div class="composer-avatar">
-            <img src="用户.jpg" alt="用户头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
           <div class="composer-editor">
             <textarea id="composerTextarea" class="composer-textarea" placeholder="在这里写下你的原创内容..."></textarea>
           </div>
         </div>
-        
+
         <div class="composer-actions-bottom">
           <div class="composer-media-options">
             <span class="action-icon">😀</span>
@@ -975,7 +968,7 @@
           <div class="rmrb-header-content">
             <div class="rmrb-avatar-line">
                 <div class="rmrb-avatar">
-                    <img src="人民日报.jpg" alt="人民日报头像" />
+                    <img src="./人民日报.jpg" alt="人民日报头像" />
                 </div>
                 <div class="rmrb-author-info">
                     <div class="rmrb-author-name">
@@ -990,12 +983,14 @@
                 【夜读：#5个方法让周末不再“无效休息”#】①允许自己不焦虑地休息；②用心地做一顿早餐；③简单出门走一走；④整理一个角落；⑤允许放空自己。周末要到了，好好放松，为新的一周积蓄力量。#人民日报夜读#
             </div>
           </div>
+
           <a href="#" class="rmrb-card-link-wrapper">
             <div class="rmrb-card-link-inner">
-                <img src="插图.jpg" alt="人民日报插图" />
+                <img src="./插图.jpg" alt="人民日报插图" />
                 <div class="link-text">【夜读】5个方法让周末不再“无效休息”</div>
             </div>
           </a>
+
           <div class="post-actions-row">
             <span class="post-action-btn">转发 718</span>
             <span class="post-action-btn">评论 1591</span>
@@ -1029,21 +1024,21 @@
       <div class="interest-list">
         <div class="item">
           <div class="avatar">
-            <img src="用户.jpg" alt="用户头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
           <span class="name">张三</span>
           <button class="follow-btn">+关注</button>
         </div>
         <div class="item">
           <div class="avatar">
-            <img src="用户.jpg" alt="用户头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
           <span class="name">李四老师</span>
           <button class="follow-btn">+关注</button>
         </div>
         <div class="item">
           <div class="avatar">
-            <img src="用户.jpg" alt="用户头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
           <span class="name">王五说科技</span>
           <button class="follow-btn">+关注</button>
@@ -1057,11 +1052,10 @@
 
   <script>
     // Constants
-    // 修改为相对路径
-    const USER_AVATAR_URL = '用户.jpg'; 
-    const RMRB_AVATAR_URL = '人民日报.jpg'; 
-    const RMRB_IMAGE_URL = '插图.jpg'; 
-
+    // 统一使用站点根目录的相对路径
+    const USER_AVATAR_URL = './用户.jpg';
+    const RMRB_AVATAR_URL = './人民日报.jpg';
+    const RMRB_IMAGE_URL = './插图.jpg';
 
     // UI Elements
     const composerTextarea = document.getElementById('composerTextarea');
@@ -1174,7 +1168,7 @@
         // Close other dropdowns
         if (button.id === 'publicDropdownBtn') {
           claimDropdownContent.classList.remove('show');
-        } else { // claimDropdownBtn
+        } else {
           publicDropdownContent.classList.remove('show');
         }
         content.classList.toggle('show');
@@ -1185,7 +1179,7 @@
           event.stopPropagation();
           const value = item.dataset.value;
           selectedValueSpan.textContent = value;
-          // Update the correct variable based on which dropdown
+
           if (button.id === 'publicDropdownBtn') {
             currentPublicSelection = value;
           } else {
