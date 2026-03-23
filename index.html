@@ -60,22 +60,28 @@
       max-width:1200px; margin:0 auto;
       display:flex; align-items:center; justify-content:space-between;
       padding:0 15px;
+      flex-wrap: wrap;
     }
-    .topbar-left,.topbar-right{ display:flex; align-items:center; gap:20px; }
+    .topbar-left{
+        display:flex; align-items:center;
+        gap:15px; /* 调整间距 */
+    }
     .weibo-logo{
-      font-weight:bold;
-      font-size:20px;
-      color:var(--weibo-red);
-      display:flex;
-      align-items:center; /* 图片和文字垂直居中 */
+        font-weight:bold;
+        font-size:20px;
+        color:var(--weibo-red);
+        display:flex;
+        align-items:center;
     }
     .weibo-logo img {
-        height: 24px; /* 根据图片微调大小 */
-        margin-right: 5px; /* 图片与文字间距 */
+        height: 24px; /* 微博图标大小 */
+        margin-right: 5px;
     }
-
-
-    .search-box{ position:relative; width:250px; }
+    .search-box{
+      position:relative;
+      width:250px;
+      flex-shrink: 0;
+    }
     .search-box input{
       width:100%;
       padding:8px 12px 8px 35px;
@@ -91,23 +97,111 @@
       color:var(--muted-text-color);
     }
 
-    .top-nav-item{
-      display:flex; flex-direction:column; align-items:center;
-      color:var(--muted-text-color);
-      font-size:12px;
-      cursor:pointer;
-      position:relative;
+    /* 右侧导航栏图标样式 */
+    .topbar-right{
+        display:flex;
+        align-items:center;
+        gap:20px; /* 图标间距 */
     }
-    .top-nav-item.active{ color:var(--primary-color); }
-    .top-nav-item .icon{ font-size:18px; margin-bottom:3px; }
-
-    .user-avatar-top{
-      width:35px; height:35px; border-radius:50%;
-      object-fit:cover; overflow:hidden; cursor:pointer;
+    .topbar-right .icon-link{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:30px; /* 图标区域大小 */
+        height:30px;
+        font-size:20px; /* 图标大小 */
+        color:var(--muted-text-color);
+        position:relative;
+        cursor:pointer;
     }
-    .user-avatar-top img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .topbar-right .icon-link.active .icon-badge{
+        background-color: var(--weibo-red);
+        color: white;
+        border-radius: 999px;
+        padding: 2px 6px;
+        font-size: 10px;
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-style: normal;
+    }
+    .topbar-right .icon-link:hover{
+        color:var(--primary-color);
+    }
 
-    .topbar-right .settings{ display:flex; align-items:center; gap:15px; color:var(--muted-text-color); font-size:18px; }
+    .topbar-right .user-avatar-top{
+        width:35px; height:35px; border-radius:50%;
+        object-fit:cover; overflow:hidden; cursor:pointer;
+        margin-left: 10px; /* 与图标组的间距 */
+    }
+    .topbar-right .user-avatar-top img{
+        width:100%; height:100%; object-fit:cover; border-radius:50%;
+    }
+
+    /* 右侧功能按钮组 */
+    .topbar-right .func-buttons{
+        display:flex;
+        align-items:center;
+        gap:10px; /* 按钮间距 */
+        margin-left: 20px; /* 与头像的间距 */
+    }
+    .topbar-right .func-button{
+        width:30px; height:30px;
+        border-radius:50%;
+        background-color:var(--secondary-color);
+        display:flex; align-items:center; justify-content:center;
+        font-size:18px;
+        color:var(--muted-text-color);
+        cursor:pointer;
+    }
+    .topbar-right .func-button:hover{
+        background-color:#e0e0e0;
+    }
+    /* 发微博按钮特殊样式 */
+    .topbar-right .post-weibo-btn{
+        background-color:var(--primary-color);
+        color:white;
+        border-radius: 999px;
+        padding: 5px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    .topbar-right .post-weibo-btn:hover{
+        background-color:#e67100;
+    }
+
+
+    @media (max-width:768px){
+      .topbar-content{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .topbar-left, .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .search-box{
+        width: 100%;
+        order: 1;
+        margin-top: 10px;
+      }
+      .topbar-right {
+          order: 2;
+          margin-top: 5px;
+      }
+      .topbar-right .top-nav-item {
+          flex-grow: 1;
+          text-align: center;
+          margin: 0 2px;
+      }
+       .topbar-right .settings {
+          display: none;
+      }
+    }
 
     /* Main Layout */
     .main-layout{
@@ -124,9 +218,6 @@
     @media (max-width:768px){
       .main-layout{ grid-template-columns:1fr; }
       .sidebar-right{ display:none; }
-      .topbar-content{ flex-wrap:wrap; justify-content:center; }
-      .search-box{ width:100%; order:1; margin-top:10px; }
-      .topbar-left,.topbar-right{ gap:10px; }
     }
 
     /* Left Sidebar */
@@ -176,13 +267,14 @@
     /* 文本框区域 */
     .composer-main-input{
       display:flex;
-      gap:10px;
+      gap:10px; /* 保持头像与文本框的间距 */
       align-items:flex-start;
       border-top:1px solid var(--border-color);
       border-bottom:1px solid var(--border-color);
       margin:10px 0;
-      padding-top: 10px; /* 内部上边距 */
-      padding-bottom: 10px; /* 内部下边距 */
+      padding-top:10px;
+      padding-bottom:10px;
+      position:relative; /* 为内部绝对定位元素提供上下文 */
     }
 
     /* Composer Avatar specific style */
@@ -191,61 +283,48 @@
       border-radius:50%;
       object-fit:cover;
       flex-shrink:0;
-      margin-top: 0px; /* 微调头像位置，与原图对齐 */
+      /* 这里的头像现在是文本框区域外部的头像，而不是文本框内部的 */
     }
     .composer-avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
 
-    /* 编辑器区域，用于容纳 textarea 和内部提示 */
-    .composer-editor{
-        flex-grow:1;
-        position:relative;
-        min-height:80px;
-        /* 注意：这里不再需要 padding，因为 textarea 自身会处理 */
-        /* background-color: lightyellow; /* 调试用 */
-    }
+    /* 编辑器区域 */
+    .composer-editor{ flex-grow:1; position:relative; min-height:80px; }
 
     .composer-textarea{
-      width:100%; /* 占据父容器的全部宽度 */
+      width:100%;
       min-height:80px;
-      padding:0; /* 不在这里设置 padding，由 placeholder 和内部元素控制 */
+      padding:0;
       border:none;
       resize:none; /* 禁止用户改变大小，保持美观 */
       font-size:14px;
       line-height:1.6;
       outline:none;
       background-color:transparent;
-      vertical-align: top; /* 确保文本从顶部开始 */
-      box-sizing: border-box; /* padding 和 border 不会增加宽度 */
+      vertical-align: top;
+      box-sizing: border-box;
       color:var(--text-color);
-      /* 占位符的顶部留白 */
-      padding-top: 5px; /* 为了让 placeholder 文本与原图对齐 */
-      padding-right: 130px; /* 给右上角元素留出空间 */
+      padding-top: 5px; /* 调整 placeholder 的垂直位置 */
+      padding-right: 160px; /* 为字数和声明留出更多空间 */
     }
     .composer-textarea::placeholder{
         color:var(--muted-text-color);
-        /* 根据图片微调 placeholder 的位置 */
-        padding-left: 0px;
         position: absolute;
-        top: 10px; /* 微调至与图片一致 */
+        top: 10px;
         left: 0;
-        pointer-events: none; /* 允许点击穿透到 textarea */
-        width: calc(100% - 130px); /* 适应 textarea 宽度 */
+        pointer-events: none;
+        width: calc(100% - 160px);
     }
 
-    /* 文本框内部右上角和右下角元素容器 */
-    .composer-text-overlay {
-        position: absolute;
-        bottom: 5px; /* 调整到底部对齐 */
-        right: 0;
-        display: flex;
-        align-items: center; /* 确保字数和声明水平居中 */
-        gap: 8px; /* 字数和声明之间的间距 */
-        pointer-events: none; /* 默认不拦截事件，除非子元素需要 */
-        z-index: 1; /* 确保在 textarea 上方 */
-        padding-right: 5px; /* 适当右边距 */
-    }
-    .composer-text-overlay > * {
-        pointer-events: auto; /* 内部元素可以交互 */
+    /* 文本框内的右下角元素 */
+    .composer-bottom-right{
+      position:absolute;
+      right:0; bottom:5px;
+      display:flex; align-items:center; /* 水平居中对齐 */
+      gap:8px; /* 字数和内容声明之间的间距 */
+      color:var(--muted-text-color);
+      font-size:12px;
+      pointer-events:auto;
+      z-index:1;
     }
 
     /* 字数统计样式 */
@@ -257,7 +336,7 @@
       font-size:12px;
     }
     .composer-count-tip.hidden {
-        display: none; /* 默认隐藏 */
+        display: none;
     }
 
 
@@ -270,7 +349,7 @@
       background-color:var(--panel-bg);
       font-size:12px;
       cursor:pointer;
-      color:var(--muted-text-color); /* 默认灰色 */
+      color:var(--muted-text-color);
       display:flex; align-items:center; gap:4px;
       user-select:none;
       white-space:nowrap;
@@ -307,7 +386,7 @@
     }
 
     /* 底部操作区（表情、图片、公开、发送） */
-    .composer-actions-bottom{
+    .composer-controls-row{
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -339,27 +418,6 @@
     }
     .composer-send-buttons .btn-send{ background-color:var(--weibo-red); color:white; }
     .composer-send-buttons .btn-send:disabled{ background-color:#cccccc; cursor:not-allowed; }
-
-    /* Feed Filter - 原本的筛选器 */
-    .feed-filter{
-      display:flex; gap:10px;
-      background-color:var(--panel-bg);
-      padding:10px 15px;
-      border-radius:var(--border-radius-lg);
-      box-shadow:var(--shadow-light);
-      margin-bottom:15px;
-    }
-    .feed-filter span{
-      padding:5px 10px;
-      border-radius:var(--border-radius-sm);
-      cursor:pointer;
-      color:var(--muted-text-color);
-    }
-    .feed-filter span.active{
-      background-color:var(--primary-color);
-      color:white;
-      font-weight:bold;
-    }
 
     /* 新增的下方导航栏样式 */
     .bottom-nav-filter{
@@ -686,7 +744,7 @@
     <div class="topbar-content">
       <div class="topbar-left">
         <div class="weibo-logo">
-          <img src="./微博头像.png" alt="微博Logo" />
+          <img src="./微博图标.png" alt="微博Logo" />
           <span>微博</span>
         </div>
         <div class="search-box">
@@ -695,33 +753,28 @@
         </div>
       </div>
       <div class="topbar-right">
-        <div class="top-nav-item active">
-          <span class="icon">🏠</span>
-          <span>首页</span>
-        </div>
-        <div class="top-nav-item">
-          <span class="icon">🔥</span>
-          <span>热点</span>
-        </div>
-        <div class="top-nav-item">
-          <span class="icon">✉️</span>
-          <span>消息</span>
-        </div>
-        <div class="top-nav-item">
-          <span class="icon">🔔</span>
-          <span>通知</span>
-        </div>
-        <div class="top-nav-item">
-          <span class="icon">👤</span>
-          <span>我</span>
-        </div>
+        <a href="#" class="icon-link">
+            <span class="icon">🏠</span>
+        </a>
+        <a href="#" class="icon-link active">
+            <span class="icon">🔥</span>
+            <i class="icon-badge">NEW</i>
+        </a>
+        <a href="#" class="icon-link">
+            <span class="icon">☐</span>
+        </a>
+        <a href="#" class="icon-link active">
+            <span class="icon">✉️</span>
+            <i class="icon-badge">9+</i>
+        </a>
         <div class="user-avatar-top">
           <img src="./用户.jpg" alt="用户头像" />
         </div>
-        <div class="settings">
-          <span>⚙️</span>
-          <span>🌙</span>
+        <div class="func-buttons">
+            <div class="func-button">⚙️</div>
+            <div class="func-button">🌙</div>
         </div>
+        <div class="post-weibo-btn">发微博</div>
       </div>
     </div>
   </div>
@@ -731,7 +784,6 @@
     <!-- Left Sidebar -->
     <div class="sidebar-left">
       <div class="menu-section">
-        <!-- 新增：首页 -->
         <div class="menu-item">
           <span class="icon">🏠</span>
           <span>首页</span>
@@ -779,48 +831,39 @@
     <div class="main-content">
       <!-- Post Composer -->
       <div class="post-composer">
-        <!-- 头部提示性文案，已删除 -->
-
-        <!-- 头像 + 文本框区 -->
+        <!-- 文本框区 -->
         <div class="composer-main-input">
-          <div class="composer-avatar">
-            <img src="./用户.jpg" alt="用户头像" />
-          </div>
+          <!-- 文本框（只用底层 placeholder，不额外显示顶部文案） -->
+          <textarea
+            id="composerTextarea"
+            class="composer-textarea"
+            placeholder="有什么新鲜事想分享给大家？"></textarea>
 
-          <div class="composer-editor">
-            <!-- 文本框 -->
-            <textarea
-              id="composerTextarea"
-              class="composer-textarea"
-              placeholder="有什么新鲜事想分享给大家？"></textarea>
+          <!-- 文本框右下角：字数 和 内容声明 -->
+          <div class="composer-bottom-right">
+            <div class="composer-count-tip hidden" title="字数">
+              字数：<span id="charCount">0</span>
+            </div>
 
-            <!-- 文本框内的浮层，包含字数和内容声明 -->
-            <div class="composer-text-overlay">
-                <!-- 字数 -->
-                <div class="composer-count-tip hidden">
-                  字数：<span id="charCount">0</span>
-                </div>
-                <!-- 内容声明 -->
-                <div class="custom-select-wrapper">
-                  <div class="custom-select-button" id="claimDropdownBtn" title="内容声明">
-                    <span id="claimSelectedValue">内容声明</span>
-                    <span>▼</span>
-                  </div>
+            <div class="custom-select-wrapper">
+              <div class="custom-select-button" id="claimDropdownBtn" title="内容声明">
+                <span id="claimSelectedValue">内容声明</span>
+                <span>▼</span>
+              </div>
 
-                  <div class="custom-select-dropdown" id="claimDropdownContent">
-                    <div class="item selected" data-value="无">无</div>
-                    <div class="item" data-value="内容为自主创作">内容为自主创作</div>
-                    <div class="item" data-value="内容为转载">内容为转载</div>
-                    <div class="item" data-value="内容由AI生成">内容由AI生成</div>
-                    <div class="item" data-value="内容为虚构演绎">内容为虚构演绎</div>
-                  </div>
-                </div>
+              <div class="custom-select-dropdown" id="claimDropdownContent">
+                <div class="item selected" data-value="无">无</div>
+                <div class="item" data-value="内容为自主创作">内容为自主创作</div>
+                <div class="item" data-value="内容为转载">内容为转载</div>
+                <div class="item" data-value="内容由AI生成">内容由AI生成</div>
+                <div class="item" data-value="内容为虚构演绎">内容为虚构演绎</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 底部按钮区：发送按钮右侧，公开在发送左边 -->
-        <div class="composer-actions-bottom">
+        <!-- 底部按钮区：表情、图片、公开、发送 -->
+        <div class="composer-controls-row">
           <div class="composer-media-options">
             <span class="action-icon">😀</span>
             <span class="action-icon">🖼️</span>
@@ -853,7 +896,8 @@
           </div>
         </div>
       </div>
-      <!-- 新增：发送按钮下面的导航栏 -->
+
+      <!-- Feed Filter -->
       <div class="bottom-nav-filter">
         <div class="filter-options">
           <span class="active">全部</span>
@@ -935,23 +979,23 @@
       <div class="interest-list">
         <div class="item">
           <div class="avatar">
-            <img src="./可能感兴趣的人1头像.png" alt="招财小猫头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
-          <span class="name">招财小猫</span>
+          <span class="name">张三</span>
           <button class="follow-btn">+关注</button>
         </div>
         <div class="item">
           <div class="avatar">
-            <img src="./可能感兴趣的人2头像.png" alt="酷玩少女头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
-          <span class="name">酷玩少女</span>
+          <span class="name">李四老师</span>
           <button class="follow-btn">+关注</button>
         </div>
         <div class="item">
           <div class="avatar">
-            <img src="./可能感兴趣的人3头像.png" alt="央视新闻头像" />
+            <img src="./用户.jpg" alt="用户头像" />
           </div>
-          <span class="name">央视新闻</span>
+          <span class="name">王五说科技</span>
           <button class="follow-btn">+关注</button>
         </div>
       </div>
@@ -981,9 +1025,8 @@
     const claimDropdownContent = document.getElementById('claimDropdownContent');
     const claimSelectedValue = document.getElementById('claimSelectedValue'); // 按钮上显示的值
 
-    const charCountTip = document.querySelector('.composer-count-tip'); // 获取字数统计容器
     const charCountEl = document.getElementById('charCount');
-
+    const charCountTip = document.querySelector('.composer-count-tip'); // 获取字数统计容器
 
     let currentPublicSelection = '公开';
     let currentClaimSelection = '无'; // 默认为“无”
@@ -1172,7 +1215,7 @@
     });
 
     // Initial setup
-    updateCharCountAndSendState(); // 页面加载时执行一次，确保字数统计隐藏
+    updateCharCountAndSendState();
   </script>
 
 </body>
